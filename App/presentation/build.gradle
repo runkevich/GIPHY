@@ -1,0 +1,127 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
+apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    defaultConfig {
+        applicationId "com.runkevich8.gmail.test"
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode 2
+        versionName "1.0"
+        vectorDrawables.useSupportLibrary = true
+
+        buildConfigField "String", "MY_CLOUD_API", '"https://api.backendless.com/DE34C51E-BB62-9A44-FFFE-BE72ACC3AB00/D7B2D441-A243-DFCB-FFE7-D81644A31200/"'
+    }
+
+    signingConfigs{
+        debug{
+            storeFile file('../dev.jks')
+            storePassword '12345678'
+            keyAlias 'AppAlias'
+            keyPassword '12345678'
+        }
+
+//        release{
+//            storeFile file('../dev.jks')
+//            storePassword '12345678'
+//            keyAlias 'AppAlias'
+//            keyPassword '12345678'
+//        }
+
+    }
+
+
+    buildTypes {
+
+        release {
+            signingConfig signingConfigs.debug
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            signingConfig signingConfigs.debug
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    flavorDimensions "typeVersion"
+    productFlavors{
+        dev{
+            dimension "typeVersion"
+            buildConfigField "String", "API_URL", "\"http://test\""
+        }
+
+        live{
+            dimension "typeVersion"
+            buildConfigField "String", "API_URL", "\"http://live\""
+        }
+
+    }
+
+
+
+    dataBinding{
+        enabled = true
+    }
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+}
+repositories {
+    mavenCentral()
+    google()
+    maven { url 'https://maven.fabric.io/public' }
+}
+
+
+dependencies {
+
+
+    def dependency = rootProject.ext.dependencies
+
+
+    implementation dependency.supportV4
+    implementation dependency.supportAppcompat
+    implementation dependency.supportDesign
+    implementation dependency.rxAndroid
+
+    implementation dependency.archComponentsExtention
+    annotationProcessor dependency.archComponentsCompiler
+
+    implementation dependency.dagger
+    annotationProcessor dependency.daggerCompiler
+
+    annotationProcessor dependency.androidBindingCompiler
+
+
+
+    implementation project(path: ':data')
+    implementation project(path: ':domain')
+
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+    implementation 'com.github.bumptech.glide:glide:4.6.1'
+    compile 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.5@aar'
+    implementation 'com.google.code.gson:gson:2.8.2'
+
+    compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta4'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.0'
+    compile('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
+        transitive = true;
+    }
+}
